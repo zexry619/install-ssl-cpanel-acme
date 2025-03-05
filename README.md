@@ -1,4 +1,3 @@
-markdown
 # Script Otomatisasi SSL dengan acme.sh dan cPanel
 
 Script ini digunakan untuk secara otomatis:
