@@ -1,3 +1,4 @@
+markdown
 # Script Otomatisasi SSL dengan acme.sh dan cPanel
 
 Script ini digunakan untuk secara otomatis:
@@ -20,32 +21,36 @@ Selain itu, pastikan user memiliki akses yang tepat untuk menjalankan perintah-p
 
 ## Cara Penggunaan
 
+### 1. Menggunakan Repository GitHub
+
 1. **Clone Repository**  
    Clone repository ini ke server atau lingkungan lokal:
    ```bash
-   git clone https://github.com/username/nama-repo.git
-   cd nama-repo
+   git clone https://github.com/zexry619/install-ssl-cpanel-acme.git
+   cd install-ssl-cpanel-acme
    ```
 
 2. **Memberikan Hak Eksekusi**  
    Berikan hak eksekusi pada script:
    ```bash
-   chmod +x nama_script.sh
+   chmod +x sslinstall.sh
    ```
 
 3. **Menjalankan Script**  
    Jalankan script dengan memberikan nama domain sebagai argumen.  
    Contoh:
    ```bash
-   ./nama_script.sh namadomain.com
+   ./sslinstall.sh namadomain.com
    ```
 
-   Script akan:
-   - Mengecek apakah acme.sh telah terinstall dan menginstallnya jika belum.
-   - Mendaftarkan akun acme.sh (jika belum terdaftar) menggunakan email `admin@namadomain.com`.
-   - Mengambil document root dari domain menggunakan uapi dan jq.
-   - Menghapus SSL lama (jika ada) dan mengeluarkan sertifikat SSL baru.
-   - Melakukan deploy sertifikat ke cPanel menggunakan deploy hook `cpanel_uapi`.
+### 2. Menjalankan Langsung via Curl
+
+Kamu juga bisa menjalankan script ini langsung tanpa harus meng-clone repository. Gunakan perintah berikut:
+```bash
+curl -sL https://raw.githubusercontent.com/zexry619/install-ssl-cpanel-acme/refs/heads/main/sslinstall.sh | bash -s namadomain.com
+```
+
+Perintah di atas akan mengunduh script dan menjalankannya secara langsung dengan argumen `namadomain.com`.
 
 ## Penjelasan Langkah demi Langkah
 
@@ -75,7 +80,3 @@ Selain itu, pastikan user memiliki akses yang tepat untuk menjalankan perintah-p
 - Pastikan perintah `uapi` dan `jq` tersedia dan dikonfigurasi dengan benar di server.
 - Script ini menggunakan server **ZeroSSL** untuk pendaftaran akun SSL. Jika ingin menggunakan server lain, sesuaikan parameter pada bagian pendaftaran akun.
 - Sebelum menjalankan script di lingkungan produksi, disarankan untuk melakukan testing terlebih dahulu di lingkungan staging.
-
----
-
-Semoga README ini dapat membantu kamu dalam menggunakan dan memahami script otomatisasi SSL ini!
