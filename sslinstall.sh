@@ -7,6 +7,7 @@ if [ -z "$1" ]; then
 fi
 
 DOMAIN=$1
+WWW_DOMAIN="www.$DOMAIN"
 EMAIL="admin@$DOMAIN"
 ACME_PATH="$HOME/.acme.sh/acme.sh"
 
@@ -52,20 +53,21 @@ echo "DocumentRoot ditemukan: $DOCUMENT_ROOT"
 echo "Menghapus SSL lama untuk $DOMAIN..."
 uapi SSL delete_ssl domain="$DOMAIN"
 
-# Mengeluarkan sertifikat SSL dengan acme.sh
-echo "Mengeluarkan sertifikat SSL untuk $DOMAIN..."
-$ACME_PATH --issue -d "$DOMAIN" --webroot "$DOCUMENT_ROOT"
+# Mengeluarkan sertifikat SSL dengan acme.sh untuk domain utama dan www
+echo "Mengeluarkan sertifikat SSL untuk $DOMAIN dan $WWW_DOMAIN..."
+$ACME_PATH --issue -d "$DOMAIN" -d "$WWW_DOMAIN" --webroot "$DOCUMENT_ROOT"
 if [ $? -ne 0 ]; then
-  echo "Gagal mengeluarkan sertifikat SSL untuk $DOMAIN"
+  echo "Gagal mengeluarkan sertifikat SSL untuk $DOMAIN dan $WWW_DOMAIN"
   exit 1
 fi
 
 # Deploy SSL ke cPanel
-echo "Melakukan deploy SSL untuk $DOMAIN..."
+echo "Melakukan deploy SSL untuk $DOMAIN dan $WWW_DOMAIN..."
 $ACME_PATH --deploy -d "$DOMAIN" --deploy-hook cpanel_uapi
+$ACME_PATH --deploy -d "$WWW_DOMAIN" --deploy-hook cpanel_uapi
 if [ $? -eq 0 ]; then
-  echo "SSL berhasil diinstall dan diterapkan ke cPanel untuk $DOMAIN"
+  echo "SSL berhasil diinstall dan diterapkan ke cPanel untuk $DOMAIN dan $WWW_DOMAIN"
 else
-  echo "Gagal melakukan deploy SSL ke cPanel untuk $DOMAIN"
+  echo "Gagal melakukan deploy SSL ke cPanel untuk $DOMAIN dan $WWW_DOMAIN"
   exit 1
 fi
