@@ -68,7 +68,7 @@ uapi SSL delete_ssl domain="$DOMAIN"
 
 # Mengeluarkan sertifikat SSL dengan acme.sh untuk domain utama, www, dan mail (dengan --force)
 echo "Mengeluarkan sertifikat SSL untuk $DOMAIN, $WWW_DOMAIN, dan $MAIL_DOMAIN menggunakan $CA_SERVER..."
-$ACME_PATH --issue -d "$DOMAIN" -d "$WWW_DOMAIN" -d "$MAIL_DOMAIN" -d WC_DOMAIN --webroot "$DOCUMENT_ROOT" --server "$CA_SERVER" --force
+$ACME_PATH --issue -d "$DOMAIN" -d "$WWW_DOMAIN" -d "$MAIL_DOMAIN" -d "$WC_DOMAIN" --webroot "$DOCUMENT_ROOT" --server "$CA_SERVER" --force
 if [ $? -ne 0 ]; then
   echo "Gagal mengeluarkan sertifikat SSL untuk $DOMAIN, $WWW_DOMAIN, dan $MAIL_DOMAIN"
   exit 1
