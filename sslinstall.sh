@@ -54,9 +54,9 @@ echo "DocumentRoot ditemukan: $DOCUMENT_ROOT"
 echo "Menghapus SSL lama untuk $DOMAIN..."
 uapi SSL delete_ssl domain="$DOMAIN"
 
-# Mengeluarkan sertifikat SSL dengan acme.sh untuk domain utama, www, dan mail
+# Mengeluarkan sertifikat SSL dengan acme.sh untuk domain utama, www, dan mail (dengan --force)
 echo "Mengeluarkan sertifikat SSL untuk $DOMAIN, $WWW_DOMAIN, dan $MAIL_DOMAIN..."
-$ACME_PATH --issue -d "$DOMAIN" -d "$WWW_DOMAIN" -d "$MAIL_DOMAIN" --webroot "$DOCUMENT_ROOT"
+$ACME_PATH --issue -d "$DOMAIN" -d "$WWW_DOMAIN" -d "$MAIL_DOMAIN" --webroot "$DOCUMENT_ROOT" --force
 if [ $? -ne 0 ]; then
   echo "Gagal mengeluarkan sertifikat SSL untuk $DOMAIN, $WWW_DOMAIN, dan $MAIL_DOMAIN"
   exit 1
@@ -64,7 +64,7 @@ fi
 
 # Deploy SSL ke cPanel
 echo "Melakukan deploy SSL untuk $DOMAIN, $WWW_DOMAIN, dan $MAIL_DOMAIN..."
-$ACME_PATH --deploy -d "$DOMAIN" --deploy-hook cpanel_uapi
+$ACME_PATH --deploy -d "$DOMAIN" --deploy-hook cpanel_uapi --force
 if [ $? -eq 0 ]; then
   echo "SSL berhasil diinstall dan diterapkan ke cPanel untuk $DOMAIN, $WWW_DOMAIN, dan $MAIL_DOMAIN"
 else
