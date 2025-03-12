@@ -2,7 +2,7 @@
 
 # Pastikan argumen domain diberikan
 if [ -z "$1" ]; then
-  echo "Penggunaan: $0 namadomain.com"
+  echo "Penggunaan: $0 namadomain.com [--ca letsencrypt]"
   exit 1
 fi
 
@@ -11,6 +11,17 @@ WWW_DOMAIN="www.$DOMAIN"
 MAIL_DOMAIN="mail.$DOMAIN"
 EMAIL="admin@$DOMAIN"
 ACME_PATH="$HOME/.acme.sh/acme.sh"
+
+# Default CA adalah ZeroSSL
+CA_SERVER="https://acme.zerossl.com/v2/DV90"
+
+# Cek jika ada opsi --ca letsencrypt
+if [[ "$2" == "--ca" && "$3" == "letsencrypt" ]]; then
+  CA_SERVER="https://acme-v02.api.letsencrypt.org/directory"
+  echo "Menggunakan Let's Encrypt sebagai CA."
+else
+  echo "Menggunakan ZeroSSL sebagai CA (default)."
+fi
 
 # Mengecek apakah acme.sh sudah terinstall
 if [ ! -f "$ACME_PATH" ]; then
@@ -27,8 +38,8 @@ export PATH="$HOME/.acme.sh:$PATH"
 
 # Mengecek apakah akun acme.sh sudah terdaftar
 if ! $ACME_PATH --list 2>/dev/null | grep -q "Registered"; then
-  echo "Mendaftarkan akun acme.sh dengan email $EMAIL..."
-  $ACME_PATH --register-account -m "$EMAIL" --server zerossl
+  echo "Mendaftarkan akun acme.sh dengan email $EMAIL ke $CA_SERVER..."
+  $ACME_PATH --register-account -m "$EMAIL" --server "$CA_SERVER"
   echo "Pendaftaran akun berhasil."
 else
   echo "Akun acme.sh sudah terdaftar."
@@ -55,8 +66,8 @@ echo "Menghapus SSL lama untuk $DOMAIN..."
 uapi SSL delete_ssl domain="$DOMAIN"
 
 # Mengeluarkan sertifikat SSL dengan acme.sh untuk domain utama, www, dan mail (dengan --force)
-echo "Mengeluarkan sertifikat SSL untuk $DOMAIN, $WWW_DOMAIN, dan $MAIL_DOMAIN..."
-$ACME_PATH --issue -d "$DOMAIN" -d "$WWW_DOMAIN" -d "$MAIL_DOMAIN" --webroot "$DOCUMENT_ROOT" --force
+echo "Mengeluarkan sertifikat SSL untuk $DOMAIN, $WWW_DOMAIN, dan $MAIL_DOMAIN menggunakan $CA_SERVER..."
+$ACME_PATH --issue -d "$DOMAIN" -d "$WWW_DOMAIN" -d "$MAIL_DOMAIN" --webroot "$DOCUMENT_ROOT" --server "$CA_SERVER" --force
 if [ $? -ne 0 ]; then
   echo "Gagal mengeluarkan sertifikat SSL untuk $DOMAIN, $WWW_DOMAIN, dan $MAIL_DOMAIN"
   exit 1
